@@ -1,10 +1,10 @@
 using UnityEngine;
 using System.Collections;
 
-public class Player01 : MonoBehaviour {
+public class Player : MonoBehaviour {
 	
 	public float speed = 10;
-	public ParticleSystem poof;
+	public GameObject poof, myPoof;
 	public int playerNum;
 	
 	private Vector3 colVector;
@@ -14,20 +14,18 @@ public class Player01 : MonoBehaviour {
 	void Start () {
 		
 		myColour = renderer.material.color;
-		
-	
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		
-		if (Input.GetAxis("HorizontalP1") != 0)
+		if (Input.GetAxis("HorizontalP"+playerNum) != 0)
 		{
-			rigidbody.AddForce(transform.right * (Input.GetAxis("HorizontalP1") * speed));
+			rigidbody.AddForce(transform.right * (Input.GetAxis("HorizontalP"+playerNum) * speed));
 		}
-		if (Input.GetAxis("VerticalP1") != 0)
+		if (Input.GetAxis("VerticalP"+playerNum) != 0)
 		{
-			rigidbody.AddForce(-transform.forward * (Input.GetAxis("VerticalP1") * speed));
+			rigidbody.AddForce(-transform.forward * (Input.GetAxis("VerticalP"+playerNum) * speed));
 		}  
 	}
 	void OnCollisionEnter (Collision other)
@@ -35,7 +33,8 @@ public class Player01 : MonoBehaviour {
 		if (other.gameObject.tag == "Player")
 		{
 			colVector = (transform.position / 2) + (other.gameObject.transform.position / 2);
-			Instantiate (poof,colVector, Quaternion.identity);
+			myPoof = Instantiate (poof,colVector, Quaternion.identity) as GameObject;
+			myPoof.particleSystem.startColor = myColour;
 		}
 	}
 }
