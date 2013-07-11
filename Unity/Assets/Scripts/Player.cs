@@ -4,9 +4,11 @@ using System.Collections;
 public class Player : MonoBehaviour {
 	
 	public float speed = 10;
-	public GameObject poof, myPoof;
+	public GameObject poof;
 	public int playerNum;
+	public GameObject sheild;
 	
+	private GameObject myPoof;
 	private Vector3 colVector;
 	private Color myColour;
 	
@@ -14,19 +16,38 @@ public class Player : MonoBehaviour {
 	void Start () {
 		
 		myColour = renderer.material.color;
+		sheild.renderer.material = this.gameObject.renderer.material;
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		
-		if (Input.GetAxis("HorizontalP"+playerNum) != 0)
+		//Joystick 1
+		if (Input.GetAxis("P"+playerNum+"J1H") != 0)
 		{
-			rigidbody.AddForce(transform.right * (Input.GetAxis("HorizontalP"+playerNum) * speed));
+			rigidbody.AddForce(transform.right * (Input.GetAxis("P"+playerNum+"J1H") * speed));
 		}
-		if (Input.GetAxis("VerticalP"+playerNum) != 0)
+		if (Input.GetAxis("P"+playerNum+"J1V") != 0)
 		{
-			rigidbody.AddForce(-transform.forward * (Input.GetAxis("VerticalP"+playerNum) * speed));
-		}  
+			rigidbody.AddForce(-transform.forward * (Input.GetAxis("P"+playerNum+"J1V") * speed));
+		}
+		
+		//Joystick 2
+		if (Input.GetAxis("P"+playerNum+"J2H") != 0)
+		{
+			Vector3 currentRot;
+			currentRot = sheild.transform.rotation.eulerAngles;
+			sheild.transform.rotation.eulerAngles.y = currentRot.y;
+		}
+		if (Input.GetAxis("P"+playerNum+"J2V") != 0)
+		{
+			Vector3 currentRot;
+			currentRot = sheild.transform.rotation.eulerAngles;
+			sheild.transform.rotation.eulerAngles.y = currentRot.y;
+			
+		} 
+		sheild.transform.eulerAngles = new Vector3( 0, Mathf.Atan2(Input.GetAxis("P"+playerNum+"J2H"),-Input.GetAxis("P"+playerNum+"J2V"))*180/Mathf.PI, 0 );
+	
 	}
 	void OnCollisionEnter (Collision other)
 	{
