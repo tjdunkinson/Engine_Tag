@@ -7,16 +7,24 @@ public class Player : MonoBehaviour {
 	public GameObject poof;
 	public int playerNum;
 	public GameObject sheild;
+	public bool It = false;
+	
 	
 	private GameObject myPoof;
 	private Vector3 colVector;
 	private Color myColour;
+	private TrailRenderer myTrail;
+
 	
 	// Use this for initialization
 	void Start () {
 		
 		myColour = renderer.material.color;
 		sheild.renderer.material = this.gameObject.renderer.material;
+		myTrail = GetComponent<TrailRenderer>();
+		myTrail.sharedMaterial = renderer.material;
+		
+		particleSystem.startColor = myColour;
 	}
 	
 	// Update is called once per frame
@@ -31,23 +39,26 @@ public class Player : MonoBehaviour {
 		{
 			rigidbody.AddForce(-transform.forward * (Input.GetAxis("P"+playerNum+"J1V") * speed));
 		}
-		
-		//Joystick 2
-		if (Input.GetAxis("P"+playerNum+"J2H") != 0)
+		if (It)
 		{
-			Vector3 currentRot;
-			currentRot = sheild.transform.rotation.eulerAngles;
-			sheild.transform.rotation.eulerAngles.y = currentRot.y;
+			if (!particleSystem.isPlaying)
+			{
+				particleSystem.Play();
+			}
 		}
-		if (Input.GetAxis("P"+playerNum+"J2V") != 0)
+		else
 		{
-			Vector3 currentRot;
-			currentRot = sheild.transform.rotation.eulerAngles;
-			sheild.transform.rotation.eulerAngles.y = currentRot.y;
-			
-		} 
+			if (particleSystem.isPlaying)
+			{
+				particleSystem.Stop();
+			}
+		}
+		
+		
+		
+		
 		sheild.transform.eulerAngles = new Vector3( 0, Mathf.Atan2(Input.GetAxis("P"+playerNum+"J2H"),-Input.GetAxis("P"+playerNum+"J2V"))*180/Mathf.PI, 0 );
-	
+		
 	}
 	void OnCollisionEnter (Collision other)
 	{
@@ -56,6 +67,15 @@ public class Player : MonoBehaviour {
 			colVector = (transform.position / 2) + (other.gameObject.transform.position / 2);
 			myPoof = Instantiate (poof,colVector, Quaternion.identity) as GameObject;
 			myPoof.particleSystem.startColor = myColour;
+			if (It)
+			{
+				It = false;
+				Player otherIt = other.gameObject.GetComponent<Player>();
+				otherIt.It = true;
+				
+				print("Your It");
+			}
+			
 		}
 	}
 }
